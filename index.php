@@ -1,10 +1,10 @@
 <?php
-session_start();
+require_once __DIR__ . '/includes/functions.php';
 
-if (isset($_SESSION['user'])) {
-    header("Location: dashboard/index.php");
+if (isLoggedIn()) {
+    header('Location: /dashboard/');
 } else {
-    header("Location: auth/login.php");
+    header('Location: /auth/login.php');
 }
-exit();
+exit;
 ?>

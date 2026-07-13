@@ -1,7 +1,6 @@
 <?php
-session_start();
-$_SESSION = array();
+require_once __DIR__ . '/../includes/functions.php';
 session_destroy();
-header("Location: login.php");
-exit();
+header('Location: /auth/login.php');
+exit;
 ?>

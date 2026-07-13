@@ -1,18 +1,6 @@
 <?php
-$host = "localhost";
-$dbname = "cms_baladiya";
-$username = "root";
-$password = "";
-
-try {
-    $pdo = new PDO(
-        "mysql:host=$host;dbname=$dbname;charset=utf8mb4",
-        $username,
-        $password
-    );
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    die("Connection failed: " . $e->getMessage());
-}
-?>
+// Database Configuration
+define('DB_HOST', 'localhost');      // Usually 'localhost'
+define('DB_USER', 'root');           // Your MySQL username (default: root)
+define('DB_PASS', '');               // Your MySQL password (default: empty for XAMPP)
+define('DB_NAME', 'cms_baladiya');   // Database name
