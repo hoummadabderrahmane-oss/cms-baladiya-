@@ -19,7 +19,7 @@ if (isset($_POST['login'])) {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['last_activity'] = time();
         
-        header("Location: ../dashboard/index.php");
+        header("Location: http://localhost/cms-baladiya/dashboard/index.php");
         exit();
     } else {
         $message = "Invalid Email or Password";
