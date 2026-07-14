@@ -8,6 +8,8 @@ define('SGC_ACCESS', true);
 require_once '../auth/auth_check.php';
 require_once '../config/database.php';
 
+global $currentUser;
+
 $pageTitle = 'Gestion des Citoyens';
 $pageIcon = 'fa-users';
 
@@ -72,7 +74,7 @@ try {
     $citoyens = $stmt->fetchAll();
     
     // Liste des quartiers pour le filtre
-    $stmt = $db->query("SELECT DISTINCT quartier FROM citoyens WHERE quartier IS NOT NULL AND statut = 'actif' ORDER BY quartier");
+    $stmt = $db->query("SELECT DISTINCT quartier FROM citoyens WHERE quartier IS NOT NULL AND quartier != '' AND statut = 'actif' ORDER BY quartier");
     $quartiers = $stmt->fetchAll(PDO::FETCH_COLUMN);
     
 } catch (PDOException $e) {
@@ -80,14 +82,7 @@ try {
     $citoyens = [];
     $quartiers = [];
 }
-define('SGC_ACCESS', true);
-require_once '../auth/auth_check.php';
-require_once '../config/database.php';
 
-global $currentUser;  // ← AJOUTÉ
-
-$pageTitle = 'Gestion des Citoyens';
-$pageIcon = 'fa-users';
 require_once '../includes/header.php';
 require_once '../includes/sidebar.php';
 require_once '../includes/navbar.php';
