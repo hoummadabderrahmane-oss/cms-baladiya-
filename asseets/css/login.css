@@ -1,0 +1,133 @@
+body{
+    min-height:100vh;
+    background:linear-gradient(135deg,#198754,#0d6efd);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+}
+
+
+/* Background circles */
+
+.circle{
+    position:absolute;
+    border-radius:50%;
+    background:rgba(255,255,255,0.15);
+    animation:float 8s infinite ease-in-out;
+}
+
+.c1{
+    width:150px;
+    height:150px;
+    top:10%;
+    left:10%;
+}
+
+.c2{
+    width:220px;
+    height:220px;
+    bottom:5%;
+    right:10%;
+    animation-delay:2s;
+}
+
+
+@keyframes float{
+
+    50%{
+        transform:translateY(-30px);
+    }
+
+}
+
+
+
+.login-card{
+
+    width:100%;
+    max-width:420px;
+    border:none;
+    border-radius:25px;
+    animation:show 0.8s ease;
+
+}
+
+
+
+@keyframes show{
+
+    from{
+        opacity:0;
+        transform:translateY(50px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+
+}
+
+
+
+.logo{
+
+    width:110px;
+    height:110px;
+    object-fit:contain;
+    animation:zoom 1s;
+
+}
+
+
+
+@keyframes zoom{
+
+    from{
+        transform:scale(0);
+        opacity:0;
+    }
+
+    to{
+        transform:scale(1);
+        opacity:1;
+    }
+
+}
+
+
+
+.form-control{
+
+    border-radius:15px;
+    padding:12px;
+    transition:.3s;
+
+}
+
+
+
+.form-control:focus{
+
+    transform:scale(1.03);
+
+}
+
+
+
+.btn-login{
+
+    border-radius:30px;
+    padding:12px;
+    transition:.3s;
+
+}
+
+
+
+.btn-login:hover{
+
+    transform:scale(1.05);
+
+}

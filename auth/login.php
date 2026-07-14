@@ -12,7 +12,10 @@ if(isset($_POST['login'])){
     $password = $_POST['password'];
 
 
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
+    $stmt = $pdo->prepare(
+        "SELECT * FROM users WHERE email = ?"
+    );
+
     $stmt->execute([$email]);
 
     $user = $stmt->fetch();
@@ -20,19 +23,26 @@ if(isset($_POST['login'])){
 
     if($user && password_verify($password, $user['password'])){
 
+
         $_SESSION['user'] = [
+
             "id" => $user['id'],
             "name" => $user['name'],
             "email" => $user['email'],
             "role" => $user['role']
+
         ];
+
 
         header("Location: ../admin/dashboard.php");
         exit();
 
+
     }else{
 
+
         $error = "Email ou mot de passe incorrect";
+
 
     }
 
@@ -47,62 +57,45 @@ if(isset($_POST['login'])){
 <head>
 
 <meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
 <title>SGC - Connexion</title>
+
+
+
+<!-- Bootstrap 5 -->
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
 
-<style>
 
-body{
+<!-- Font Awesome -->
 
-    min-height:100vh;
-    background:linear-gradient(135deg,#198754,#0d6efd);
-
-}
+<link rel="stylesheet" 
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
 
-.login-card{
 
-    border:none;
-    border-radius:20px;
+<!-- Custom CSS -->
 
-}
-
-
-.logo{
-
-    width:100px;
-    height:100px;
-    object-fit:contain;
-
-}
-
-
-.btn-login{
-
-    border-radius:30px;
-    padding:12px;
-
-}
-
-
-</style>
+<link rel="stylesheet" href="../assets/css/login.css">
 
 
 </head>
 
 
+
 <body>
 
 
-<div class="container">
+
+<div class="circle c1"></div>
+
+<div class="circle c2"></div>
 
 
-<div class="row justify-content-center align-items-center vh-100">
-
-
-<div class="col-md-4">
 
 
 <div class="card shadow-lg login-card">
@@ -111,14 +104,18 @@ body{
 <div class="card-body p-5 text-center">
 
 
+
 <img src="../assets/images/logo.png"
 class="logo mb-3"
 alt="SGC Logo">
 
 
-<h3 class="fw-bold">
+
+<h2 class="fw-bold">
 SGC
-</h3>
+</h2>
+
+
 
 <p class="text-muted">
 Système de Gestion de Commune
@@ -126,83 +123,140 @@ Système de Gestion de Commune
 
 
 
+
 <?php if($error): ?>
 
 <div class="alert alert-danger">
+
+<i class="fa-solid fa-circle-exclamation"></i>
+
 <?= $error ?>
+
 </div>
 
 <?php endif; ?>
 
 
 
+
+
 <form method="POST">
+
 
 
 <div class="mb-3 text-start">
 
+
 <label class="form-label">
+
+<i class="fa-solid fa-envelope"></i>
 Email
+
 </label>
 
-<input type="email"
+
+<input 
+type="email"
 name="email"
 class="form-control"
 placeholder="admin@sgc.com"
 required>
 
+
 </div>
+
+
 
 
 
 <div class="mb-3 text-start">
 
+
 <label class="form-label">
+
+<i class="fa-solid fa-lock"></i>
 Mot de passe
+
 </label>
 
-<input type="password"
+
+
+<div class="input-group">
+
+
+<input
+id="password"
+type="password"
 name="password"
 class="form-control"
 placeholder="****"
 required>
 
-</div>
+
+<button 
+type="button"
+class="btn btn-outline-secondary"
+onclick="togglePassword()">
 
 
+<i id="eye" class="fa-solid fa-eye"></i>
 
-<button class="btn btn-success w-100 btn-login"
-name="login">
-
-<i class="bi bi-box-arrow-in-right"></i>
-Connexion
 
 </button>
 
 
+</div>
+
+
+
+</div>
+
+
+
+
+
+<button 
+type="submit"
+name="login"
+class="btn btn-success w-100 btn-login">
+
+
+<i class="fa-solid fa-right-to-bracket"></i>
+
+Connexion
+
+
+</button>
+
+
+
+
 </form>
+
+
 
 
 <hr>
 
 
 <small class="text-muted">
+
 © SGC 2026 - Administration Communale
+
 </small>
 
 
-</div>
-
-</div>
 
 
 </div>
 
-
 </div>
 
 
-</div>
+
+
+
+<script src="../assets/js/login.js"></script>
 
 
 </body>
