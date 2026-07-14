@@ -12,43 +12,27 @@ if(isset($_POST['login'])){
     $password = $_POST['password'];
 
 
-    // Search user by email
-    $sql = "SELECT * FROM users WHERE email = ?";
-
-    $stmt = $pdo->prepare($sql);
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
     $stmt->execute([$email]);
 
     $user = $stmt->fetch();
 
 
-    if($user){
+    if($user && password_verify($password, $user['password'])){
 
-        // Verify password
-        if(password_verify($password, $user['password'])){
+        $_SESSION['user'] = [
+            "id" => $user['id'],
+            "name" => $user['name'],
+            "email" => $user['email'],
+            "role" => $user['role']
+        ];
 
-
-            $_SESSION['user'] = [
-                "id" => $user['id'],
-                "name" => $user['name'],
-                "email" => $user['email'],
-                "role" => $user['role']
-            ];
-
-
-            header("Location: ../admin/dashboard.php");
-            exit();
-
-
-        }else{
-
-            $error = "Mot de passe incorrect";
-
-        }
-
+        header("Location: ../admin/dashboard.php");
+        exit();
 
     }else{
 
-        $error = "Email introuvable";
+        $error = "Email ou mot de passe incorrect";
 
     }
 
@@ -63,31 +47,83 @@ if(isset($_POST['login'])){
 <head>
 
 <meta charset="UTF-8">
-<title>SGC Login</title>
+<title>SGC - Connexion</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+
+<style>
+
+body{
+
+    min-height:100vh;
+    background:linear-gradient(135deg,#198754,#0d6efd);
+
+}
+
+
+.login-card{
+
+    border:none;
+    border-radius:20px;
+
+}
+
+
+.logo{
+
+    width:100px;
+    height:100px;
+    object-fit:contain;
+
+}
+
+
+.btn-login{
+
+    border-radius:30px;
+    padding:12px;
+
+}
+
+
+</style>
+
 
 </head>
 
 
-<body class="bg-light">
+<body>
 
 
 <div class="container">
 
-<div class="row justify-content-center mt-5">
+
+<div class="row justify-content-center align-items-center vh-100">
+
 
 <div class="col-md-4">
 
 
-<div class="card shadow">
-
-<div class="card-body">
+<div class="card shadow-lg login-card">
 
 
-<h3 class="text-center mb-4">
-Connexion SGC
+<div class="card-body p-5 text-center">
+
+
+<img src="../assets/images/logo.png"
+class="logo mb-3"
+alt="SGC Logo">
+
+
+<h3 class="fw-bold">
+SGC
 </h3>
+
+<p class="text-muted">
+Système de Gestion de Commune
+</p>
+
 
 
 <?php if($error): ?>
@@ -99,40 +135,47 @@ Connexion SGC
 <?php endif; ?>
 
 
+
 <form method="POST">
 
 
-<div class="mb-3">
+<div class="mb-3 text-start">
 
-<label>Email</label>
+<label class="form-label">
+Email
+</label>
 
-<input type="email" 
-name="email" 
+<input type="email"
+name="email"
 class="form-control"
+placeholder="admin@sgc.com"
 required>
 
 </div>
 
 
 
-<div class="mb-3">
+<div class="mb-3 text-start">
 
-<label>Mot de passe</label>
+<label class="form-label">
+Mot de passe
+</label>
 
 <input type="password"
 name="password"
 class="form-control"
+placeholder="****"
 required>
 
 </div>
 
 
 
-<button type="submit"
-name="login"
-class="btn btn-success w-100">
+<button class="btn btn-success w-100 btn-login"
+name="login">
 
-Se connecter
+<i class="bi bi-box-arrow-in-right"></i>
+Connexion
 
 </button>
 
@@ -140,17 +183,28 @@ Se connecter
 </form>
 
 
+<hr>
+
+
+<small class="text-muted">
+© SGC 2026 - Administration Communale
+</small>
+
+
 </div>
+
+</div>
+
 
 </div>
 
 
 </div>
 
-</div>
 
 </div>
 
 
 </body>
+
 </html>
