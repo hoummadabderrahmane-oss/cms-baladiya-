@@ -1,15 +1,17 @@
 -- ============================================
 -- SGC - Système de Gestion des Citoyens
 -- Base de données v1.0
+-- Importez ce fichier via PHPMyAdmin
 -- ============================================
 
+-- Créer la base de données
 CREATE DATABASE IF NOT EXISTS sgc_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE sgc_db;
 
 -- ============================================
 -- Table: utilisateurs (Admins)
 -- ============================================
-CREATE TABLE utilisateurs (
+CREATE TABLE IF NOT EXISTS utilisateurs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nom VARCHAR(100) NOT NULL,
     prenom VARCHAR(100) NOT NULL,
@@ -28,7 +30,7 @@ CREATE TABLE utilisateurs (
 -- ============================================
 -- Table: citoyens
 -- ============================================
-CREATE TABLE citoyens (
+CREATE TABLE IF NOT EXISTS citoyens (
     id INT AUTO_INCREMENT PRIMARY KEY,
     cin VARCHAR(20) UNIQUE NOT NULL,
     nom VARCHAR(100) NOT NULL,
@@ -59,7 +61,7 @@ CREATE TABLE citoyens (
 -- ============================================
 -- Table: documents
 -- ============================================
-CREATE TABLE documents (
+CREATE TABLE IF NOT EXISTS documents (
     id INT AUTO_INCREMENT PRIMARY KEY,
     citoyen_id INT NOT NULL,
     type_document ENUM('extrait_naissance', 'certificat_residence', 'attestation_mariage', 'certificat_deces', 'carte_identite', 'autre') NOT NULL,
@@ -78,7 +80,7 @@ CREATE TABLE documents (
 -- ============================================
 -- Table: journal_activites (Log)
 -- ============================================
-CREATE TABLE journal_activites (
+CREATE TABLE IF NOT EXISTS journal_activites (
     id INT AUTO_INCREMENT PRIMARY KEY,
     utilisateur_id INT,
     action VARCHAR(50) NOT NULL,
@@ -93,17 +95,17 @@ CREATE TABLE journal_activites (
 -- ============================================
 -- Index pour optimisation
 -- ============================================
-CREATE INDEX idx_citoyens_cin ON citoyens(cin);
-CREATE INDEX idx_citoyens_nom ON citoyens(nom, prenom);
-CREATE INDEX idx_citoyens_quartier ON citoyens(quartier);
-CREATE INDEX idx_citoyens_statut ON citoyens(statut);
-CREATE INDEX idx_documents_citoyen ON documents(citoyen_id);
-CREATE INDEX idx_journal_utilisateur ON journal_activites(utilisateur_id);
-CREATE INDEX idx_journal_date ON journal_activites(created_at);
+CREATE INDEX IF NOT EXISTS idx_citoyens_cin ON citoyens(cin);
+CREATE INDEX IF NOT EXISTS idx_citoyens_nom ON citoyens(nom, prenom);
+CREATE INDEX IF NOT EXISTS idx_citoyens_quartier ON citoyens(quartier);
+CREATE INDEX IF NOT EXISTS idx_citoyens_statut ON citoyens(statut);
+CREATE INDEX IF NOT EXISTS idx_documents_citoyen ON documents(citoyen_id);
+CREATE INDEX IF NOT EXISTS idx_journal_utilisateur ON journal_activites(utilisateur_id);
+CREATE INDEX IF NOT EXISTS idx_journal_date ON journal_activites(created_at);
 
 -- ============================================
 -- Données initiales
 -- ============================================
-INSERT INTO utilisateurs (nom, prenom, email, mot_de_passe, role, commune, statut) 
+INSERT IGNORE INTO utilisateurs (nom, prenom, email, mot_de_passe, role, commune, statut) 
 VALUES ('Admin', 'Principal', 'admin@commune.ma', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'super_admin', 'Commune Principale', 1);
 -- Mot de passe par défaut: password (à changer immédiatement!)

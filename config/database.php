@@ -1,7 +1,7 @@
 <?php
 /**
  * ============================================
- * SGC - Configuration de la base de données
+ * SGC - Configuration de la base de données (XAMPP)
  * ============================================
  */
 
@@ -10,11 +10,11 @@ if (!defined('SGC_ACCESS')) {
     define('SGC_ACCESS', true);
 }
 
-// Paramètres de connexion
+// Paramètres de connexion XAMPP (par défaut)
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'sgc_db');
 define('DB_USER', 'root');
-define('DB_PASS', '');          // ← Modifier selon votre config
+define('DB_PASS', '');          // ← XAMPP: root sans mot de passe par défaut
 define('DB_CHARSET', 'utf8mb4');
 
 // Options PDO
@@ -38,7 +38,18 @@ function getDB(): PDO {
             $pdo = new PDO($dsn, DB_USER, DB_PASS, $GLOBALS['options']);
         } catch (PDOException $e) {
             error_log("Erreur connexion DB: " . $e->getMessage());
-            die("Erreur de connexion à la base de données. Contactez l'administrateur.");
+            die("
+                <div style='font-family:Segoe UI;padding:40px;text-align:center;'>
+                    <h2 style='color:#d32f2f;'>❌ Erreur de connexion à la base de données</h2>
+                    <p style='font-size:16px;color:#666;'>
+                        Vérifiez que:<br><br>
+                        1. XAMPP est démarré (Apache + MySQL)<br>
+                        2. La base de données <b>sgc_db</b> existe<br>
+                        3. Le fichier <b>database.sql</b> a été importé dans PHPMyAdmin<br><br>
+                        <a href='http://localhost/phpmyadmin' target='_blank' style='color:#1a5f2a;'>Ouvrir PHPMyAdmin</a>
+                    </p>
+                </div>
+            ");
         }
     }
     
@@ -53,17 +64,21 @@ function logActivity(string $action, string $table = null, int $recordId = null,
     $userId = $_SESSION['user_id'] ?? null;
     $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
     
-    $stmt = $db->prepare("
-        INSERT INTO journal_activites (utilisateur_id, action, table_concernee, enregistrement_id, details, adresse_ip)
-        VALUES (:user_id, :action, :table, :record_id, :details, :ip)
-    ");
-    
-    $stmt->execute([
-        ':user_id'    => $userId,
-        ':action'     => $action,
-        ':table'      => $table,
-        ':record_id'  => $recordId,
-        ':details'    => $details,
-        ':ip'         => $ip
-    ]);
+    try {
+        $stmt = $db->prepare("
+            INSERT INTO journal_activites (utilisateur_id, action, table_concernee, enregistrement_id, details, adresse_ip)
+            VALUES (:user_id, :action, :table, :record_id, :details, :ip)
+        ");
+        
+        $stmt->execute([
+            ':user_id'    => $userId,
+            ':action'     => $action,
+            ':table'      => $table,
+            ':record_id'  => $recordId,
+            ':details'    => $details,
+            ':ip'         => $ip
+        ]);
+    } catch (PDOException $e) {
+        error_log("Erreur log: " . $e->getMessage());
+    }
 }
