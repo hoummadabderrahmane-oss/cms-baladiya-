@@ -1,38 +1,106 @@
-// Show / hide password
+```javascript
+/* =====================================================
+   SGC v1.0
+   login.js
+   ===================================================== */
 
-function togglePassword(){
+document.addEventListener("DOMContentLoaded", function () {
 
-    let pass = document.getElementById("password");
-    let icon = document.getElementById("eye");
+    // ==========================
+    // Show / Hide Password
+    // ==========================
 
+    const password = document.getElementById("password");
+    const toggle = document.getElementById("togglePassword");
 
-    if(pass.type === "password"){
+    if (toggle && password) {
 
-        pass.type="text";
+        toggle.addEventListener("click", function () {
 
-        icon.classList.remove("fa-eye");
-        icon.classList.add("fa-eye-slash");
+            if (password.type === "password") {
 
-    }else{
+                password.type = "text";
 
-        pass.type="password";
+                this.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
 
-        icon.classList.remove("fa-eye-slash");
-        icon.classList.add("fa-eye");
+            } else {
+
+                password.type = "password";
+
+                this.innerHTML = '<i class="fa-solid fa-eye"></i>';
+
+            }
+
+        });
 
     }
 
-}
+    // ==========================
+    // SweetAlert Error
+    // ==========================
 
+    if (typeof error !== "undefined" && error !== "") {
 
+        Swal.fire({
 
-// Loading button
+            icon: "error",
 
-document.querySelector("form").addEventListener("submit",()=>{
+            title: "Connexion impossible",
 
-    let btn=document.querySelector(".btn-login");
+            text: error,
 
-    btn.innerHTML=
-    '<i class="fa-solid fa-spinner fa-spin"></i> Connexion...';
+            confirmButtonColor: "#16a34a",
+
+            confirmButtonText: "OK"
+
+        });
+
+    }
+
+    // ==========================
+    // Loading Animation
+    // ==========================
+
+    const form = document.querySelector("form");
+
+    if (form) {
+
+        form.addEventListener("submit", function () {
+
+            const btn = form.querySelector("button[type='submit']");
+
+            btn.disabled = true;
+
+            btn.innerHTML = `
+                <span class="spinner-border spinner-border-sm me-2"></span>
+                Connexion...
+            `;
+
+        });
+
+    }
+
+    // ==========================
+    // Input Animation
+    // ==========================
+
+    const inputs = document.querySelectorAll(".form-control");
+
+    inputs.forEach(input => {
+
+        input.addEventListener("focus", function () {
+
+            this.parentElement.style.transform = "scale(1.02)";
+
+        });
+
+        input.addEventListener("blur", function () {
+
+            this.parentElement.style.transform = "scale(1)";
+
+        });
+
+    });
 
 });
+```

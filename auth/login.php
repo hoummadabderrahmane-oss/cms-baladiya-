@@ -1,55 +1,69 @@
+```php
 <?php
-
 session_start();
+require_once "../config/database.php";
 
-require "../config/database.php";
+// إذا كان المستخدم مسجل الدخول
+if (isset($_SESSION['user_id'])) {
+    header("Location: ../admin/dashboard.php");
+    exit();
+}
 
 $error = "";
 
-if(isset($_POST['login'])){
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    $email = trim($_POST['email']);
-    $password = $_POST['password'];
+    $email = trim($_POST["email"]);
+    $password = $_POST["password"];
 
+    if (!empty($email) && !empty($password)) {
 
-    $stmt = $pdo->prepare(
-        "SELECT * FROM users WHERE email = ?"
-    );
+        $stmt = $pdo->prepare("
+            SELECT *
+            FROM users
+            WHERE email = ?
+            LIMIT 1
+        ");
 
-    $stmt->execute([$email]);
+        $stmt->execute([$email]);
 
-    $user = $stmt->fetch();
+        $user = $stmt->fetch();
 
+        if ($user) {
 
-    if($user && password_verify($password, $user['password'])){
+            if (
+                password_verify($password, $user["password"]) &&
+                $user["status"] === "active"
+            ) {
 
+                session_regenerate_id(true);
 
-        $_SESSION['user'] = [
+                $_SESSION["user_id"] = $user["id"];
+                $_SESSION["fullname"] = $user["fullname"];
+                $_SESSION["role"] = $user["role"];
 
-            "id" => $user['id'],
-            "name" => $user['name'],
-            "email" => $user['email'],
-            "role" => $user['role']
+                header("Location: ../admin/dashboard.php");
+                exit();
 
-        ];
+            } else {
 
+                $error = "Mot de passe incorrect.";
 
-        header("Location: ../admin/dashboard.php");
-        exit();
+            }
 
+        } else {
 
-    }else{
+            $error = "Adresse email introuvable.";
 
+        }
 
-        $error = "Email ou mot de passe incorrect";
+    } else {
 
+        $error = "Veuillez remplir tous les champs.";
 
     }
-
 }
-
 ?>
-
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -58,207 +72,130 @@ if(isset($_POST['login'])){
 
 <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+content="width=device-width, initial-scale=1">
 
+<title>Connexion | SGC</title>
 
-<title>SGC - Connexion</title>
+<link
+href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+rel="stylesheet">
 
+<link
+rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
-
-<!-- Bootstrap 5 -->
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-
-
-<!-- Font Awesome -->
-
-<link rel="stylesheet" 
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
-
-
-<!-- Custom CSS -->
-
-<link rel="stylesheet" href="../assets/css/login.css">
-
+<link
+rel="stylesheet"
+href="../assets/css/login.css">
 
 </head>
 
-
-
 <body>
 
+<div class="login-container">
 
+<div class="login-card">
 
-<div class="circle c1"></div>
+<div class="text-center mb-4">
 
-<div class="circle c2"></div>
-
-
-
-
-<div class="card shadow-lg login-card">
-
-
-<div class="card-body p-5 text-center">
-
-
-
-<img src="../assets/images/logo.png"
-class="logo mb-3"
-alt="SGC Logo">
-
-
-
-<h2 class="fw-bold">
+<h2 class="fw-bold text-success">
 SGC
 </h2>
 
-
-
 <p class="text-muted">
-Système de Gestion de Commune
+Système de Gestion Communale
 </p>
 
-
-
-
-<?php if($error): ?>
-
-<div class="alert alert-danger">
-
-<i class="fa-solid fa-circle-exclamation"></i>
-
-<?= $error ?>
-
 </div>
-
-<?php endif; ?>
-
-
-
-
 
 <form method="POST">
 
+<div class="mb-3">
 
-
-<div class="mb-3 text-start">
-
-
-<label class="form-label">
-
-<i class="fa-solid fa-envelope"></i>
-Email
-
-</label>
-
-
-<input 
-type="email"
-name="email"
-class="form-control"
-placeholder="admin@sgc.com"
-required>
-
-
-</div>
-
-
-
-
-
-<div class="mb-3 text-start">
-
-
-<label class="form-label">
-
-<i class="fa-solid fa-lock"></i>
-Mot de passe
-
-</label>
-
-
+<label>Email</label>
 
 <div class="input-group">
 
+<span class="input-group-text">
+
+<i class="fa-solid fa-envelope"></i>
+
+</span>
 
 <input
-id="password"
-type="password"
-name="password"
+type="email"
+name="email"
 class="form-control"
-placeholder="****"
 required>
 
+</div>
 
-<button 
-type="button"
+</div>
+
+<div class="mb-4">
+
+<label>Mot de passe</label>
+
+<div class="input-group">
+
+<span class="input-group-text">
+
+<i class="fa-solid fa-lock"></i>
+
+</span>
+
+<input
+type="password"
+name="password"
+id="password"
+class="form-control"
+required>
+
+<button
 class="btn btn-outline-secondary"
-onclick="togglePassword()">
+type="button"
+id="togglePassword">
 
-
-<i id="eye" class="fa-solid fa-eye"></i>
-
+<i class="fa-solid fa-eye"></i>
 
 </button>
 
+</div>
 
 </div>
 
+<div class="d-grid">
 
-
-</div>
-
-
-
-
-
-<button 
-type="submit"
-name="login"
-class="btn btn-success w-100 btn-login">
-
+<button
+class="btn btn-success btn-lg">
 
 <i class="fa-solid fa-right-to-bracket"></i>
 
 Connexion
 
-
 </button>
 
-
-
+</div>
 
 </form>
 
-
-
-
-<hr>
-
-
-<small class="text-muted">
-
-© SGC 2026 - Administration Communale
-
-</small>
-
-
-
-
 </div>
 
 </div>
 
+<script>
 
+const error =
+<?= json_encode($error) ?>;
 
+</script>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script src="../assets/js/login.js"></script>
-
 
 </body>
 
 </html>
+```

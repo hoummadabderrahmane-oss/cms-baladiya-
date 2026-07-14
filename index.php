@@ -1,19 +1,11 @@
 <?php
-
 session_start();
 
-
-// If user already logged in
-if(isset($_SESSION['user'])){
-
+if (isset($_SESSION['user_id'])) {
     header("Location: admin/dashboard.php");
     exit();
-
-}else{
-
-    header("Location: auth/login.php");
-    exit();
-
 }
 
+header("Location: auth/login.php");
+exit();
 ?>

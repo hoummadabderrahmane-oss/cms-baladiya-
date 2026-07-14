@@ -1,6 +1,10 @@
 <?php
-
-// Database configuration
+/**
+ * ==========================================================
+ * SGC v1.0
+ * Configuration de la base de données
+ * ==========================================================
+ */
 
 $host = "localhost";
 $dbname = "sgc";
@@ -10,28 +14,23 @@ $password = "";
 try {
 
     $pdo = new PDO(
-        "mysql:host=$host;dbname=$dbname;charset=utf8",
+        "mysql:host=$host;dbname=$dbname;charset=utf8mb4",
         $username,
         $password
     );
 
-    // Error mode
-    $pdo->setAttribute(
-        PDO::ATTR_ERRMODE,
-        PDO::ERRMODE_EXCEPTION
-    );
+    // Gestion des erreurs
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Fetch mode
-    $pdo->setAttribute(
-        PDO::ATTR_DEFAULT_FETCH_MODE,
-        PDO::FETCH_ASSOC
-    );
+    // Résultats sous forme de tableau associatif
+    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
+    // Désactiver l'émulation des requêtes préparées
+    $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 
-} catch(PDOException $e){
+} catch (PDOException $e) {
 
-    die("Database connection failed: " . $e->getMessage());
+    die("Erreur de connexion : " . $e->getMessage());
 
 }
-
 ?>
