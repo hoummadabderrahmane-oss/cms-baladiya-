@@ -1,219 +1,156 @@
 <?php
-session_start();
-require_once "../config/database.php";
 
-if (isset($_SESSION['user_id'])) {
-    header("Location: ../admin/dashboard.php");
-        exit();
+session_start();
+
+require "../config/database.php";
+
+$error = "";
+
+if(isset($_POST['login'])){
+
+    $email = trim($_POST['email']);
+    $password = $_POST['password'];
+
+
+    // Search user by email
+    $sql = "SELECT * FROM users WHERE email = ?";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$email]);
+
+    $user = $stmt->fetch();
+
+
+    if($user){
+
+        // Verify password
+        if(password_verify($password, $user['password'])){
+
+
+            $_SESSION['user'] = [
+                "id" => $user['id'],
+                "name" => $user['name'],
+                "email" => $user['email'],
+                "role" => $user['role']
+            ];
+
+
+            header("Location: ../admin/dashboard.php");
+            exit();
+
+
+        }else{
+
+            $error = "Mot de passe incorrect";
+
         }
 
-        $error = "";
 
-        if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    }else{
 
-            $email = trim($_POST['email']);
-                $password = $_POST['password'];
+        $error = "Email introuvable";
 
-                    if (empty($email) || empty($password)) {
-                            $error = "Veuillez remplir tous les champs.";
-                                } else {
+    }
 
-                                        $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
-                                                $stmt->execute([$email]);
+}
 
-                                                        if ($stmt->rowCount() == 1) {
+?>
 
-                                                                    $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-                                                                                if (password_verify($password, $user['password'])) {
+<!DOCTYPE html>
+<html lang="fr">
 
-                                                                                                session_regenerate_id(true);
+<head>
 
-                                                                                                                $_SESSION['user_id'] = $user['id'];
-                                                                                                                                $_SESSION['full_name'] = $user['full_name'];
-                                                                                                                                                $_SESSION['role'] = $user['role'];
+<meta charset="UTF-8">
+<title>SGC Login</title>
 
-                                                                                                                                                                header("Location: ../admin/dashboard.php");
-                                                                                                                                                                                exit();
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-                                                                                                                                                                                            } else {
+</head>
 
-                                                                                                                                                                                                            $error = "Mot de passe incorrect.";
 
-                                                                                                                                                                                                                        }
+<body class="bg-light">
 
-                                                                                                                                                                                                                                } else {
 
-                                                                                                                                                                                                                                            $error = "Email introuvable.";
+<div class="container">
 
-                                                                                                                                                                                                                                                    }
+<div class="row justify-content-center mt-5">
 
-                                                                                                                                                                                                                                                        }
+<div class="col-md-4">
 
-                                                                                                                                                                                                                                                        }
-                                                                                                                                                                                                                                                        ?>
 
-                                                                                                                                                                                                                                                        <!DOCTYPE html>
-                                                                                                                                                                                                                                                        <html lang="fr">
+<div class="card shadow">
 
-                                                                                                                                                                                                                                                        <head>
+<div class="card-body">
 
-                                                                                                                                                                                                                                                        <meta charset="UTF-8">
-                                                                                                                                                                                                                                                        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-                                                                                                                                                                                                                                                        <title>SGC | Connexion</title>
+<h3 class="text-center mb-4">
+Connexion SGC
+</h3>
 
-                                                                                                                                                                                                                                                        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
 
-                                                                                                                                                                                                                                                        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+<?php if($error): ?>
 
-                                                                                                                                                                                                                                                        <style>
+<div class="alert alert-danger">
+<?= $error ?>
+</div>
 
-                                                                                                                                                                                                                                                        body{
-                                                                                                                                                                                                                                                        background:#eef2f7;
-                                                                                                                                                                                                                                                        height:100vh;
-                                                                                                                                                                                                                                                        display:flex;
-                                                                                                                                                                                                                                                        justify-content:center;
-                                                                                                                                                                                                                                                        align-items:center;
-                                                                                                                                                                                                                                                        font-family:Arial,sans-serif;
-                                                                                                                                                                                                                                                        }
+<?php endif; ?>
 
-                                                                                                                                                                                                                                                        .card{
 
-                                                                                                                                                                                                                                                        width:430px;
+<form method="POST">
 
-                                                                                                                                                                                                                                                        border:none;
 
-                                                                                                                                                                                                                                                        border-radius:18px;
+<div class="mb-3">
 
-                                                                                                                                                                                                                                                        box-shadow:0 10px 30px rgba(0,0,0,.15);
+<label>Email</label>
 
-                                                                                                                                                                                                                                                        }
+<input type="email" 
+name="email" 
+class="form-control"
+required>
 
-                                                                                                                                                                                                                                                        .logo{
+</div>
 
-                                                                                                                                                                                                                                                        width:110px;
 
-                                                                                                                                                                                                                                                        }
 
-                                                                                                                                                                                                                                                        .btn-main{
+<div class="mb-3">
 
-                                                                                                                                                                                                                                                        background:#0B6E4F;
+<label>Mot de passe</label>
 
-                                                                                                                                                                                                                                                        color:white;
+<input type="password"
+name="password"
+class="form-control"
+required>
 
-                                                                                                                                                                                                                                                        }
+</div>
 
-                                                                                                                                                                                                                                                        .btn-main:hover{
 
-                                                                                                                                                                                                                                                        background:#09553d;
 
-                                                                                                                                                                                                                                                        color:white;
+<button type="submit"
+name="login"
+class="btn btn-success w-100">
 
-                                                                                                                                                                                                                                                        }
+Se connecter
 
-                                                                                                                                                                                                                                                        </style>
+</button>
 
-                                                                                                                                                                                                                                                        </head>
 
-                                                                                                                                                                                                                                                        <body>
+</form>
 
-                                                                                                                                                                                                                                                        <div class="card">
 
-                                                                                                                                                                                                                                                        <div class="card-body p-4">
+</div>
 
-                                                                                                                                                                                                                                                        <div class="text-center">
+</div>
 
-                                                                                                                                                                                                                                                        <img src="../assets/images/logo.png" class="logo mb-3">
 
-                                                                                                                                                                                                                                                        <h4>Système de Gestion Communale</h4>
+</div>
 
-                                                                                                                                                                                                                                                        <p class="text-muted">
+</div>
 
-                                                                                                                                                                                                                                                        نظام إدارة الجماعة
+</div>
 
-                                                                                                                                                                                                                                                        </p>
 
-                                                                                                                                                                                                                                                        </div>
-
-                                                                                                                                                                                                                                                        <?php if($error!=""){ ?>
-
-                                                                                                                                                                                                                                                        <div class="alert alert-danger">
-
-                                                                                                                                                                                                                                                        <?= $error ?>
-
-                                                                                                                                                                                                                                                        </div>
-
-                                                                                                                                                                                                                                                        <?php } ?>
-
-                                                                                                                                                                                                                                                        <form method="POST">
-
-                                                                                                                                                                                                                                                        <div class="mb-3">
-
-                                                                                                                                                                                                                                                        <label>Email</label>
-
-                                                                                                                                                                                                                                                        <div class="input-group">
-
-                                                                                                                                                                                                                                                        <span class="input-group-text">
-
-                                                                                                                                                                                                                                                        <i class="fa fa-envelope"></i>
-
-                                                                                                                                                                                                                                                        </span>
-
-                                                                                                                                                                                                                                                        <input
-                                                                                                                                                                                                                                                        type="email"
-                                                                                                                                                                                                                                                        name="email"
-                                                                                                                                                                                                                                                        class="form-control"
-                                                                                                                                                                                                                                                        required>
-
-                                                                                                                                                                                                                                                        </div>
-
-                                                                                                                                                                                                                                                        </div>
-
-                                                                                                                                                                                                                                                        <div class="mb-4">
-
-                                                                                                                                                                                                                                                        <label>Mot de passe</label>
-
-                                                                                                                                                                                                                                                        <div class="input-group">
-
-                                                                                                                                                                                                                                                        <span class="input-group-text">
-
-                                                                                                                                                                                                                                                        <i class="fa fa-lock"></i>
-
-                                                                                                                                                                                                                                                        </span>
-
-                                                                                                                                                                                                                                                        <input
-                                                                                                                                                                                                                                                        type="password"
-                                                                                                                                                                                                                                                        name="password"
-                                                                                                                                                                                                                                                        class="form-control"
-                                                                                                                                                                                                                                                        required>
-
-                                                                                                                                                                                                                                                        </div>
-
-                                                                                                                                                                                                                                                        </div>
-
-                                                                                                                                                                                                                                                        <button class="btn btn-main w-100">
-
-                                                                                                                                                                                                                                                        <i class="fa fa-right-to-bracket"></i>
-
-                                                                                                                                                                                                                                                        Se connecter
-
-                                                                                                                                                                                                                                                        </button>
-
-                                                                                                                                                                                                                                                        </form>
-
-                                                                                                                                                                                                                                                        <hr>
-
-                                                                                                                                                                                                                                                        <div class="text-center text-muted">
-
-                                                                                                                                                                                                                                                        SGC Version 1.0
-
-                                                                                                                                                                                                                                                        </div>
-
-                                                                                                                                                                                                                                                        </div>
-
-                                                                                                                                                                                                                                                        </div>
-
-                                                                                                                                                                                                                                                        </body>
-
-                                                                                                                                                                                                                                                        </html>
+</body>
+</html>
