@@ -37,9 +37,9 @@ if (empty($basePath)) $basePath = '../';
            <span>Documents</span>
         </a>
         
-        <a href="#" class="nav-link">
-            <i class="fas fa-chart-bar"></i>
-            <span>Statistiques</span>
+        <a href="<?= $basePath ?>statistics/index.php" class="nav-link <?= ($currentDir == 'statistics') ? 'active' : '' ?>">
+           <i class="fas fa-chart-bar"></i>
+        <span>Statistiques</span>
         </a>
         
         <?php if (isSuperAdmin()): ?>
