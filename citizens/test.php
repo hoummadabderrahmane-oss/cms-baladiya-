@@ -15,7 +15,7 @@ echo "<b>2. Config path:</b> $cfg → " . (file_exists($cfg) ? "<span style='col
 if (!file_exists($cfg)) die("<hr>STOP: fix the path to database.php");
 
 require_once $cfg;
-
+$pdo = getDB();
 // 3. Does config create $pdo?
 echo "<b>3. \$pdo object:</b> " . (isset($pdo) ? "<span style='color:green'>OK</span>" : "<span style='color:red'>MISSING — your database.php must create a PDO connection named \$pdo</span>") . "<br>";
 if (!isset($pdo)) die("<hr>STOP: send me your config/database.php content");
