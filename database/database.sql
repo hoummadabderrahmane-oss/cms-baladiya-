@@ -1,15 +1,12 @@
 -- ============================================
--- SGC - Système de Gestion des Citoyens
--- Base de données v1.0
--- Importez ce fichier via PHPMyAdmin
+-- CMS Baladiya - Base de données
 -- ============================================
 
--- Créer la base de données
 CREATE DATABASE IF NOT EXISTS sgc_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE sgc_db;
 
 -- ============================================
--- Table: utilisateurs (Admins)
+-- Table: utilisateurs
 -- ============================================
 CREATE TABLE IF NOT EXISTS utilisateurs (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -93,19 +90,23 @@ CREATE TABLE IF NOT EXISTS journal_activites (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================
--- Index pour optimisation
+-- Index
 -- ============================================
-CREATE INDEX IF NOT EXISTS idx_citoyens_cin ON citoyens(cin);
-CREATE INDEX IF NOT EXISTS idx_citoyens_nom ON citoyens(nom, prenom);
-CREATE INDEX IF NOT EXISTS idx_citoyens_quartier ON citoyens(quartier);
-CREATE INDEX IF NOT EXISTS idx_citoyens_statut ON citoyens(statut);
-CREATE INDEX IF NOT EXISTS idx_documents_citoyen ON documents(citoyen_id);
-CREATE INDEX IF NOT EXISTS idx_journal_utilisateur ON journal_activites(utilisateur_id);
-CREATE INDEX IF NOT EXISTS idx_journal_date ON journal_activites(created_at);
+CREATE INDEX idx_citoyens_cin ON citoyens(cin);
+CREATE INDEX idx_citoyens_nom ON citoyens(nom, prenom);
+CREATE INDEX idx_citoyens_quartier ON citoyens(quartier);
+CREATE INDEX idx_citoyens_statut ON citoyens(statut);
+CREATE INDEX idx_documents_citoyen ON documents(citoyen_id);
 
 -- ============================================
 -- Données initiales
 -- ============================================
 INSERT IGNORE INTO utilisateurs (nom, prenom, email, mot_de_passe, role, commune, statut) 
 VALUES ('Admin', 'Principal', 'admin@commune.ma', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'super_admin', 'Commune Principale', 1);
--- Mot de passe par défaut: password (à changer immédiatement!)
+-- Mot de passe: password
+
+-- Données de test
+INSERT IGNORE INTO citoyens (cin, nom, prenom, sexe, quartier, telephone, profession, statut) VALUES
+('AB123456', 'Alami', 'Mohamed', 'M', 'Hassan', '0612345678', 'Enseignant', 'actif'),
+('CD789012', 'Bennani', 'Fatima', 'F', 'Agdal', '0623456789', 'Médecin', 'actif'),
+('EF345678', 'El Fassi', 'Ahmed', 'M', 'Maarif', '0634567890', 'Commerçant', 'actif');
